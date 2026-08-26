@@ -1,0 +1,218 @@
+﻿<UserControl x:Class="DXApplication2.Main.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:common="clr-namespace:DXApplication2.Common;assembly=DXApplication2.Common"
+             xmlns:views="clr-namespace:DXApplication2.Main.Views"
+             xmlns:viewModels="clr-namespace:DXApplication2.Main.ViewModels"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion"
+             xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
+             mc:Ignorable="d" d:DesignHeight="500" d:DesignWidth="600"
+             d:DataContext="{dxmvvm:ViewModelSource viewModels:MainViewModel}">
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:VisualStateService/>
+    </dxmvvm:Interaction.Behaviors>
+    <DockPanel>
+        <dxr:RibbonControl DockPanel.Dock="Top" RibbonStyle="Office2019" ToolbarShowMode="Hide">
+            <dxr:RibbonDefaultPageCategory>
+                <dxr:RibbonPage Caption="Data">
+                    <dxr:RibbonPageGroup Caption="Load Data">
+                        <dxb:BarButtonItem 
+                            Content="Open" 
+                            Command="{Binding DataOpenFolderCommand}"
+                            LargeGlyph="{dx:DXImage 'Office2013/Actions/LoadFrom_32x32.png'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Update" 
+                            Command="{Binding DataUpdateCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Dashboards/NewDataSource.svg'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Fully Reload" 
+                            Command="{Binding DataReloadCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Dashboards/UpdateDataExtract.svg'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Delete All" 
+                            Command="{Binding DataDeleteAllCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Dashboards/DeleteDataSource.svg'}"
+                            RibbonStyle="Large"/>
+                        
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Exhibit Data">
+                        
+                        <dxb:BarButtonItem 
+                         Content="Delete" 
+                         Command="{Binding DataDeleteCommand}"
+                         LargeGlyph="{dx:DXImage 'Office2013/Actions/DeleteList2_32x32.png'}"
+                         RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                         Content="Refresh" 
+                         Command="{Binding DataRefreshCommand}"
+                         LargeGlyph="{dx:DXImage 'Office2013/Actions/Reset_32x32.png'}"
+                         RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                         Content="Export" 
+                         Command="{Binding ExportResultCsvCommand}"
+                         LargeGlyph="{dx:DXImage 'Office2013/Save/SaveAndNew_32x32.png'}"
+                         RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                         Content="Save" 
+                         Command="{Binding DataSaveCommand}"
+                         LargeGlyph="{dx:DXImage 'Office2013/Save/Save_32x32.png'}"
+                         RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                         Content="Preview" 
+                         Command="{Binding PreviewCommand}"
+                         LargeGlyph="{dx:DXImage 'Office2013/Content/Image_32x32.png'}"
+                         RibbonStyle="Large"/>
+                     
+                        <dxb:BarButtonItem 
+                         Content="Default Process" 
+                         Command="{Binding DefaultProcessCommand}"
+                         LargeGlyph="{dx:DXImage 'Office2013/Chart/FullStackedLine_32x32.png'}"
+                         RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                        Content="Hide" 
+                        Command="{Binding DataHideCommand}"
+                        Glyph="{dx:DXImage 'Office2013/Actions/Hide_16x16.png'}"
+                        />
+                        <dxb:BarButtonItem 
+                        Content="Unhide" 
+                        Command="{Binding DataShowHideCommand}"
+                        Glyph="{dx:DXImage 'Office2013/Actions/SelectAll_16x16.png'}"
+                        />
+                        <dxb:BarCheckItem 
+                        Content="Show Hide" 
+                        IsChecked="{Binding ShowHidden, Mode=TwoWay}"
+                        Glyph="{dx:DXImage 'Office2013/Actions/Show_16x16.png'}"
+                        />
+                    </dxr:RibbonPageGroup>
+                </dxr:RibbonPage>
+                <dxr:RibbonPage Caption="Process">
+                    <dxr:RibbonPageGroup Caption="Process">
+                        <dxb:BarButtonItem 
+                            Content="Reprocess" 
+                            Command="{Binding ReprocessCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Dashboards/Update.svg'}"
+                            RibbonStyle="Large"/>
+
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Plot Style">
+                        <dxb:BarButtonItem 
+                            Content="Scatter Plot" 
+                            Command="{Binding ScatterPlotCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_Point.svg'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Line Plot" 
+                            Command="{Binding LinePlotCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_Line.svg'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Polar Plot" 
+                            Command="{Binding PolarPlotCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_PolarLine.svg'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Filled Polar Plot" 
+                            Command="{Binding PolarPlotFilledCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_PolarArea.svg'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Heat Map" 
+                            Command="{Binding HeatmapCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Chart/Heatmap.svg'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Video" 
+                            Command="{Binding GenerateVideoCommand}"
+                            LargeGlyph="{dx:DXImage 'SvgImages/Outlook Inspired/GettingStarted.svg'}"
+                            RibbonStyle="Large"/>
+                    </dxr:RibbonPageGroup>
+                    <dxr:RibbonPageGroup Caption="Configurations">
+                        <dxb:BarButtonItem 
+                             Content="ROI" 
+                             Command="{Binding SelectRoiCommand}"
+                             LargeGlyph="{dx:DXImage 'SvgImages/Dashboards/AlignmentCenterCenter.svg'}"
+                             RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                             Content="View Preprocessing" 
+                             Command="{Binding ViewPreprocessingCommand}"
+                             LargeGlyph="{dx:DXImage 'SvgImages/DiagramIcons/ResetSelectedImages.svg'}"
+                             RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                             Content="Set as Image Background" 
+                             Command="{Binding SetImageBackgroundCommand}"
+                             LargeGlyph="{dx:DXImage 'SvgImages/DiagramIcons/SetSelectedImagesStretchMode_UniformToFill.svg'}"
+                             RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                             Content="Set as Pump Background" 
+                             Command="{Binding SetPumpBackgroundCommand}"
+                             LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_RadarRangeArea.svg'}"
+                             RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                             Content="Background" 
+                             Command="{Binding OpenBackgroundCommand}"
+                             LargeGlyph="{dx:DXImage 'SvgImages/Dashboards/ChartBubble.svg'}"
+                             RibbonStyle="Large"/>
+                    </dxr:RibbonPageGroup>
+                    
+                </dxr:RibbonPage>
+                <dxr:RibbonPage Caption="Configs">
+                    <dxr:RibbonPageGroup Caption="Experiment Update">
+                        <dxb:BarButtonItem 
+                            Content="Types" 
+                            Command="{Binding ConfigsUpdateExperimentTypesCommand}"
+                            LargeGlyph="{dx:DXImage 'Office2013/Setup/Properties_32x32.png'}"
+                            RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Params" 
+                            Command="{Binding ConfigsUpdateExperimentParametersCommand}"
+                            LargeGlyph="{dx:DXImage 'Office2013/Chart/PieLabelsDataLabels_32x32.png'}"
+                            RibbonStyle="Large"/>
+                    </dxr:RibbonPageGroup>
+                </dxr:RibbonPage>
+                <dxr:RibbonPage x:Name="ribbonPage_Main" Caption="View">
+                    <dxr:RibbonPageGroup x:Name="ribbonPageGroup_Main">
+                        <dxr:RibbonGalleryBarItem x:Name="ribbonGalleryBarItem_Theme">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxr:RibbonGalleryItemThemeSelectorBehavior/>
+                            </dxmvvm:Interaction.Behaviors>
+                        </dxr:RibbonGalleryBarItem>
+                    </dxr:RibbonPageGroup>
+                </dxr:RibbonPage>
+            </dxr:RibbonDefaultPageCategory>
+        </dxr:RibbonControl>
+        <dxdo:DockLayoutManager FloatingMode="Desktop" ClosedPanelsBarVisibility="Never">
+            <dxdo:LayoutGroup Orientation="Horizontal">
+                <dxdo:LayoutPanel Name="Navigation" Caption="Navigation" AllowClose="False" ItemWidth="200">
+                    <dxa:AccordionControl AutoExpandAllItems="True" SelectionUnit="SubItem">
+                        <dxa:AccordionItem Header="Modules" dxmvvm:UIRegion.Region="{x:Static common:Regions.Navigation}">
+                            <dxa:AccordionItem.ItemContainerStyle>
+                                <Style TargetType="dxa:AccordionItem">
+                                    <Setter Property="Header" Value="{Binding Caption}"/>
+                                </Style>
+                            </dxa:AccordionItem.ItemContainerStyle>
+                        </dxa:AccordionItem>
+                    </dxa:AccordionControl>
+                </dxdo:LayoutPanel>
+                <dxdo:DocumentGroup Name="Documents" DestroyOnClosingChildren="False"
+                                        dxmvvm:UIRegion.Region="{x:Static common:Regions.Documents}">
+                    <dxdo:DocumentGroup.ItemStyle>
+                        <Style TargetType="dxdo:LayoutPanel">
+                            <Setter Property="Caption" Value="{Binding Title}"/>
+                            <Setter Property="IsActive" Value="{Binding IsActive, Mode=TwoWay}"/>
+                            <Setter Property="ClosingBehavior" Value="ImmediatelyRemove"/>
+                        </Style>
+                    </dxdo:DocumentGroup.ItemStyle>
+                </dxdo:DocumentGroup>
+            </dxdo:LayoutGroup>
+        </dxdo:DockLayoutManager>
+    </DockPanel>
+</UserControl>

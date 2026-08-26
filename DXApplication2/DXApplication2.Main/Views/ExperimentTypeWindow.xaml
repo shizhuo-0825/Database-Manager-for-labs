@@ -1,0 +1,67 @@
+﻿<dx:ThemedWindow x:Class="DXApplication2.Main.Views.ExperimentTypesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+        Title="Experiment Types" 
+        Height="600" Width="900"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部说明 -->
+        <TextBlock Grid.Row="0" 
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,10" 
+                   Foreground="Gray">
+            Manage experiment type definitions. 
+            <LineBreak/>
+            • Name: internal identifier used to match folder names (must be unique, avoid changing).
+            <LineBreak/>
+            • DisplayName: user-facing pretty name.
+            <LineBreak/>
+            • Category: used for grouping in dropdowns.
+        </TextBlock>
+
+        <!-- 表格 -->
+        <dxg:GridControl Grid.Row="1"
+                         x:Name="grid"
+                         ItemsSource="{Binding ExperimentTypes}"
+                         AutoGenerateColumns="None"
+                         SelectionMode="Row">
+            <dxg:GridControl.View>
+                <dxg:TableView 
+                    ShowGroupPanel="False"
+                    NewItemRowPosition="Bottom"
+                    AllowPerPixelScrolling="True"
+                    ShowTotalSummary="False"
+                    NavigationStyle="Cell"/>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="Id" Header="ID" ReadOnly="True" Width="60"/>
+                <dxg:GridColumn FieldName="Name" Header="Name" Width="120"/>
+                <dxg:GridColumn FieldName="DisplayName" Header="Display Name" Width="150"/>
+                <dxg:GridColumn FieldName="Category" Header="Category" Width="120"/>
+                <dxg:GridColumn FieldName="DefaultPlotTemplate" Header="Default Plot" Width="120"/>
+                <dxg:GridColumn FieldName="Description" Header="Description" Width="*"/>
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+
+        <!-- 底部按钮 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <dx:SimpleButton Content="Save" Width="80" Margin="5,0" 
+                             Command="{Binding SaveCommand}"/>
+            <dx:SimpleButton Content="Reload" Width="80" Margin="5,0"
+                             Command="{Binding ReloadCommand}"/>
+            <dx:SimpleButton Content="Delete Selected" Width="120" Margin="5,0"
+                             Command="{Binding DeleteSelectedCommand}"
+                             CommandParameter="{Binding SelectedItem, ElementName=grid}"/>
+            <dx:SimpleButton Content="Close" Width="80" Margin="5,0" 
+                             Click="CloseButton_Click"/>
+        </StackPanel>
+    </Grid>
+</dx:ThemedWindow>

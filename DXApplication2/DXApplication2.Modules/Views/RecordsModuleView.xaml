@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="DXApplication2.Modules.Views.RecordsModuleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:DXApplication2.Modules.ViewModels"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="1200"
+             d:DataContext="{d:DesignInstance viewModels:RecordsModuleViewModel}">
+
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:VisualStateService/>
+    </dxmvvm:Interaction.Behaviors>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部标题栏 -->
+        <Border Grid.Row="0" 
+                Padding="10,8"
+                Background="#F0F0F0"
+                BorderThickness="0,0,0,1"
+                BorderBrush="#DDDDDD">
+            <TextBlock Text="{Binding HeaderText}"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+        </Border>
+
+        <!-- 主内容:左侧表格 + 右侧 Inspector -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="280"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧表格 -->
+            <dxg:GridControl x:Name="RecordsGrid"
+                Grid.Column="0"
+                 ItemsSource="{Binding DisplayRows}"
+                 SelectedItem="{Binding SelectedDisplayRow, Mode=TwoWay}"
+                 AutoGenerateColumns="AddNew"
+                 ShowBorder="False"
+                 Margin="0,0,4,0">
+                <dxg:GridControl.View>
+                    <dxg:TableView
+                        
+                        ShowGroupPanel="False"
+                        AllowPerPixelScrolling="True"
+                        NavigationStyle="Row"
+                        AllowEditing="False"
+                        MultiSelectMode="Row">
+                        <dxg:TableView.RowCellMenuCustomizations>
+                            <dxb:BarButtonItem Content="View Full ExptParams"
+                                 ItemClick="ViewFullParamsClick"/>
+                        </dxg:TableView.RowCellMenuCustomizations>
+                    </dxg:TableView>
+                </dxg:GridControl.View>
+                <!-- 不写 Columns:让 AutoGenerateColumns 根据字典 key 自动生成 -->
+            </dxg:GridControl>
+
+            <!-- 右侧 Inspector -->
+            <Border Grid.Column="1"
+                    Margin="8,0,0,0"
+                    Padding="10">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Inspector"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,10"/>
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Select a record to view details"
+                               FontSize="11"
+                               Foreground="Gray"
+                               Margin="0,0,0,10"/>
+                    <ItemsControl ItemsSource="{Binding InspectorItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}">
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <!-- 默认:键值对布局 -->
+                                            <Setter Property="ContentTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <Grid Margin="0,3">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="110"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Grid.Column="0"
+                                                   Text="{Binding Name}"
+                                                   FontWeight="SemiBold"/>
+                                                            <TextBlock Grid.Column="1"
+                                                   Text="{Binding Value}"
+                                                   TextWrapping="Wrap"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <!-- 缩略图:显示 Image -->
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsThumbnail}" Value="True">
+                                                    <Setter Property="ContentTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <StackPanel Margin="0,8,0,0">
+                                                                    <TextBlock Text="{Binding Name}"
+                                                           FontWeight="SemiBold"
+                                                           Margin="0,0,0,4"/>
+                                                                    <Image Source="{Binding ThumbnailPath}"
+                                                       MaxWidth="256"
+                                                       MaxHeight="256"
+                                                       HorizontalAlignment="Left"
+                                                       Stretch="Uniform"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

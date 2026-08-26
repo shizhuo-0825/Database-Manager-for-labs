@@ -1,0 +1,29 @@
+﻿<UserControl
+    x:Class="DXApplication2.Main.Views.ProgressSplashScreen"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="25">
+
+        <StackPanel>
+
+            <TextBlock
+                Text="{Binding Status}"
+                FontSize="18"
+                Margin="0,0,0,15"/>
+
+            <ProgressBar
+                Height="18"
+                Minimum="0"
+                Maximum="{Binding Maximum}"
+                Value="{Binding Progress}"/>
+
+            <TextBlock
+                Margin="0,10,0,0"
+                Text="{Binding PercentText}"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

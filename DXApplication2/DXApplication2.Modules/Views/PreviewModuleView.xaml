@@ -1,0 +1,159 @@
+﻿<UserControl x:Class="DXApplication2.Modules.Views.PreviewModuleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:DXApplication2.Modules.ViewModels"
+             xmlns:scottplot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1100"
+             d:DataContext="{d:DesignInstance viewModels:PreviewModuleViewModel}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="270"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 左侧 -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Padding="10,8" Background="#F0F0F0" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD">
+                <TextBlock Text="{Binding HeaderText}" FontSize="14" FontWeight="SemiBold"/>
+            </Border>
+
+            <!-- 三个 Radio -->
+            <Border Grid.Row="1" Padding="10,5" Background="#FAFAFA" BorderThickness="0,0,0,1" BorderBrush="#DDDDDD">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="Raw" 
+                                 GroupName="Mode" 
+                                 IsChecked="{Binding IsRawMode, Mode=TwoWay}"
+                                 Margin="0,0,20,0"/>
+                    <RadioButton Content="Preprocessed" 
+                                 GroupName="Mode" 
+                                 IsChecked="{Binding IsPreprocessedMode, Mode=TwoWay}"
+                                 Margin="0,0,20,0"/>
+                    <RadioButton Content="Select ROI" 
+                                 GroupName="Mode" 
+                                 IsChecked="{Binding IsSelectRoiMode, Mode=TwoWay}"/>
+                </StackPanel>
+            </Border>
+
+            <scottplot:WpfPlot x:Name="PlotControl" Grid.Row="2"/>
+
+            <Border Grid.Row="3" Padding="10,4" Background="#F5F5F5" BorderThickness="0,1,0,0" BorderBrush="#DDDDDD">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="Gray"/>
+            </Border>
+        </Grid>
+
+        <!-- 右侧配置 -->
+        <Border Grid.Column="1" Background="#FAFAFA" BorderThickness="1,0,0,0" BorderBrush="#DDDDDD">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10">
+
+                    <!-- Preview Config -->
+                    <TextBlock Text="Preview Config" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Colormap" FontWeight="SemiBold" Margin="0,5,0,3"/>
+                    <ComboBox ItemsSource="{Binding AvailableColormaps}"
+                              SelectedItem="{Binding Colormap, Mode=TwoWay}"/>
+
+                    <TextBlock Text="Z Range" FontWeight="SemiBold" Margin="0,15,0,3"/>
+                    <TextBlock Text="{Binding ZMinValue, StringFormat={}Min: {0:G3}}" FontSize="10" Foreground="Gray"/>
+                    <Slider Value="{Binding ZMinValue, Mode=TwoWay}"
+                            Minimum="{Binding ZRangeMin}"
+                            Maximum="{Binding ZRangeMax}"/>
+                    <TextBlock Text="{Binding ZMaxValue, StringFormat={}Max: {0:G3}}" FontSize="10" Foreground="Gray"/>
+                    <Slider Value="{Binding ZMaxValue, Mode=TwoWay}"
+                            Minimum="{Binding ZRangeMin}"
+                            Maximum="{Binding ZRangeMax}"/>
+
+                    <!-- Preprocessing:在 Raw/Preprocessed 模式下显示 -->
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelectRoiMode}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+
+                        <Border Height="1" Background="#DDDDDD" Margin="0,20,0,15"/>
+
+                        <TextBlock Text="Preprocessing" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Hotspot Size (0 = off)" FontWeight="SemiBold" Margin="0,5,0,3"/>
+                        <dxe:SpinEdit Value="{Binding HotspotSize, Mode=TwoWay}"
+                                      MinValue="0" MaxValue="99" Increment="2"
+                                      MaskType="Numeric" Mask="F0"/>
+
+                        <TextBlock Text="Hotspot Ratio" FontWeight="SemiBold" Margin="0,10,0,3"/>
+                        <dxe:SpinEdit Value="{Binding HotspotRatio, Mode=TwoWay}"
+                                      MinValue="1" MaxValue="1000" Increment="0.5"
+                                      MaskType="Numeric" Mask="F2"/>
+
+                        <TextBlock Text="Hard Threshold (0 = off)" FontWeight="SemiBold" Margin="0,10,0,3"/>
+                        <dxe:SpinEdit Value="{Binding HardThreshold, Mode=TwoWay}"
+                                      MinValue="0" MaxValue="1000000000" Increment="1000"
+                                      MaskType="Numeric" Mask="F0"/>
+
+                        <TextBlock Text="Gaussian Sigma (0 = off)" FontWeight="SemiBold" Margin="0,10,0,3"/>
+                        <dxe:SpinEdit Value="{Binding GaussianSigma, Mode=TwoWay}"
+                                      MinValue="0" MaxValue="50" Increment="0.5"
+                                      MaskType="Numeric" Mask="F2"/>
+
+                        <dx:SimpleButton Content="Update" 
+                                         Command="{Binding UpdatePreprocessingCommand}"
+                                         Margin="0,15,0,0"
+                                         Padding="15,5"/>
+                    </StackPanel>
+
+                    <!-- ROI:只在 SelectRoi 模式下显示 -->
+                    <StackPanel Visibility="{Binding IsSelectRoiMode, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                        <Border Height="1" Background="#DDDDDD" Margin="0,20,0,15"/>
+
+                        <TextBlock Text="ROI" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                        <CheckBox Content="Show ROI" 
+                                  IsChecked="{Binding ShowRoi, Mode=TwoWay}"
+                                  Margin="0,5,0,10"/>
+
+                        <TextBlock Text="Tag" FontWeight="SemiBold" Margin="0,5,0,3"/>
+                        <ComboBox ItemsSource="{Binding AvailableTags}"
+                                  SelectedItem="{Binding SelectedTag, Mode=TwoWay}"/>
+
+                        <TextBlock Text="Timestamp" FontWeight="SemiBold" Margin="0,10,0,3"/>
+                        <ComboBox ItemsSource="{Binding AvailableTimestamps}"
+                                  SelectedItem="{Binding SelectedTimestamp, Mode=TwoWay}"/>
+
+                        <dx:SimpleButton Content="Select ROI" 
+                                         Command="{Binding SelectRoiCommand}"
+                                         Margin="0,15,0,5"
+                                         Padding="15,5"/>
+
+                        <dx:SimpleButton Content="Delete Selected" 
+                                         Command="{Binding DeleteRoiCommand}"
+                                         Padding="15,5"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

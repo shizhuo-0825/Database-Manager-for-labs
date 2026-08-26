@@ -1,0 +1,133 @@
+﻿<UserControl x:Class="DXApplication2.Modules.Views.GroupModuleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:views="clr-namespace:DXApplication2.Modules.Views"
+             xmlns:viewModels="clr-namespace:DXApplication2.Modules.ViewModels"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             mc:Ignorable="d" d:DesignHeight="500"
+             d:DataContext="{dxmvvm:ViewModelSource viewModels:GroupModuleViewModel}" 
+             d:DesignWidth="1200">
+
+    <!-- Ctrl+S 快捷键触发保存 -->
+    <UserControl.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding DataSaveCommand}"/>
+        <KeyBinding Key="F5" Command="{Binding DataReloadCommand}"/>
+    </UserControl.InputBindings>
+
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:VisualStateService/>
+    </dxmvvm:Interaction.Behaviors>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="280"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 左侧表格 -->
+        <dxg:GridControl x:Name="MainGrid"
+                 Grid.Column="0"
+                 ItemsSource="{Binding GroupRows}"
+                 SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+
+                 AutoGenerateColumns="None"
+                 ShowBorder="False" Margin="0,0,4,0">
+            <dxg:GridControl.View>
+                <dxg:TableView 
+                    ShowGroupPanel="True"
+                    AllowPerPixelScrolling="True"
+                    NavigationStyle="Cell"
+                    AllowEditing="True"
+                    AllowGrouping="True"
+                    MultiSelectMode="Row"
+                    >
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand 
+                EventName="RowDoubleClick"
+                Command="{Binding OpenRecordsCommand}"
+                CommandParameter="{Binding SelectedRow}"/>
+                    </dxmvvm:Interaction.Behaviors>
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="Id" Header="ID" ReadOnly="True" Width="60"/>
+
+                <dxg:GridColumn FieldName="ExperimentDate" Header="Date" ReadOnly="True" Width="110">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:DateEditSettings DisplayFormat="yyyy-MM-dd" Mask="yyyy-MM-dd"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+
+                <dxg:GridColumn FieldName="Material" Header="Material" ReadOnly="True" Width="150"/>
+               
+                <!-- Source 列:下拉选择 -->
+                <dxg:GridColumn FieldName="SourceTypes" Header="Source" Width="100">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:ComboBoxEditSettings 
+                            ItemsSource="{Binding DataContext.SourceOptions, RelativeSource={RelativeSource AncestorType=dxg:GridControl}}"
+                            IsTextEditable="False"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+
+                <!-- Method 列:下拉选择 -->
+                <dxg:GridColumn FieldName="MethodTypes" Header="Method" Width="100">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:ComboBoxEditSettings 
+                            ItemsSource="{Binding DataContext.MethodOptions, RelativeSource={RelativeSource AncestorType=dxg:GridControl}}"
+                            IsTextEditable="False"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+
+                <!-- Pump 列:下拉选择 -->
+                <dxg:GridColumn FieldName="PumpTypes" Header="Pump" Width="100">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:ComboBoxEditSettings 
+                            ItemsSource="{Binding DataContext.PumpOptions, RelativeSource={RelativeSource AncestorType=dxg:GridControl}}"
+                            IsTextEditable="False"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="Notes" Header="Notes" Width="100"/>
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+
+        <!-- 右侧 Inspector -->
+        <Border Grid.Column="1"
+                Margin="8,0,0,0"
+                Padding="10">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top"
+                           Text="Inspector"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Margin="0,0,0,10"/>
+                <TextBlock DockPanel.Dock="Top"
+                           Text="Ctrl+S to save,  F5 to reload"
+                           FontSize="11"
+                           Foreground="Gray"
+                           Margin="0,0,0,10"/>
+                <ItemsControl ItemsSource="{Binding InspectorItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="110"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Name}"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Value}"
+                                           TextWrapping="Wrap"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>
