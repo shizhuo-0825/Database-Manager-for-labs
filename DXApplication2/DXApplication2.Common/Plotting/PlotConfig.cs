@@ -49,5 +49,6 @@
         // Z 范围(用户可拖 RangeSlider 调整,null 表示自动用数据范围)
         public double? ZMinOverride { get; set; }
         public double? ZMaxOverride { get; set; }
+        public int? ContourLevels { get; set; } = null;   // null → 用默认 12,以后可以做 UI slider
     }
 }

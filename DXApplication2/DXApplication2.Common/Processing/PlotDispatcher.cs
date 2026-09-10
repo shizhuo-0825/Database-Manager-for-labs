@@ -12,7 +12,10 @@ namespace DXApplication2.Common.Processing
         LineOrScatter,
         Heatmap,
         Polar,          // 新加
-        PolarFilled     // 新加
+        PolarFilled,     // 新加
+        Contour,        // 换名
+        PolarContour,    // 换名
+        PolarHeatmap
     }
 
     public static class PlotDispatcher
@@ -28,7 +31,7 @@ namespace DXApplication2.Common.Processing
             if (kind == PlotKind.Heatmap)
             {
                 System.Diagnostics.Debug.WriteLine(
-        $"[Dispatcher] Heatmap: X='{context?.XAxisFieldName}', Y='{context?.YAxisFieldName}', ctx={(context == null ? "NULL" : "OK")}");
+                $"[Dispatcher] Heatmap: X='{context?.XAxisFieldName}', Y='{context?.YAxisFieldName}', ctx={(context == null ? "NULL" : "OK")}");
                 var groupIds2 = records.Select(r => r.DataGroupId).Distinct().ToList();
                 using var db2 = new AppDbContext();
                 var sourceTypes2 = await db2.DataGroups
@@ -49,7 +52,14 @@ namespace DXApplication2.Common.Processing
 
                 return new HeatmapProcessor();
             }
-
+            if (kind == PlotKind.PolarHeatmap)
+            {
+                // 复用 HeatmapProcessor,产生的 Matrix + XValues + YValues 会被 PolarHeatmapRenderer
+                // 解释成 X=θ, Y=R
+                return new HeatmapProcessor();
+            }
+            if (kind == PlotKind.Contour || kind == PlotKind.PolarContour)
+                return new HeatmapProcessor();
             // Polar / PolarFilled 保持不变
             if (kind == PlotKind.Polar || kind == PlotKind.PolarFilled)
             {

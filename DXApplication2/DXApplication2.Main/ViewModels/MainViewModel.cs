@@ -79,6 +79,9 @@ namespace DXApplication2.Main.ViewModels
         public DelegateCommand DataHideCommand { get; }
         public DelegateCommand DataShowHideCommand { get; }
         public DelegateCommand DataDeleteCommand { get; }
+        public DelegateCommand PolarHeatmapCommand { get; }
+        public DelegateCommand ContourCommand { get; }
+        public DelegateCommand PolarContourCommand { get; }
         // ========== Constructor ==========
         // ViewModelSource 要求构造函数是 protected
         protected MainViewModel()
@@ -110,6 +113,9 @@ namespace DXApplication2.Main.ViewModels
             DataHideCommand = new DelegateCommand(async () => await ApplyFlagAsync(hide: true, delete: false));
             DataShowHideCommand = new DelegateCommand(async () => await ApplyFlagAsync(hide: false, delete: false));
             DataDeleteCommand = new DelegateCommand(async () => await ApplyFlagAsync(hide: null, delete: true));
+            PolarHeatmapCommand = new DelegateCommand(ExecutePolarHeatmap);
+            ContourCommand = new DelegateCommand(ExecuteContour);
+            PolarContourCommand = new DelegateCommand(ExecutePolarContour);
             System.Threading.Tasks.Task.Run(() =>
             {
                 using var db = new AppDbContext();
@@ -138,6 +144,40 @@ namespace DXApplication2.Main.ViewModels
             {
                 GroupId = msg.GroupId
             });
+        }
+        private void ExecuteContour()
+        {
+            var manager = ModuleManager.DefaultManager;
+            var effective = _lastSelectedRecords.Where(r => !r.IsHidden && !r.IsDeleted).ToList();
+            if (effective.Count == 0) { MessageBox.Show("No records selected.", "Contour"); return; }
+            manager.InjectOrNavigate(Regions.Documents, AppModules.PlotModule);
+            System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Messenger.Default.Send(new RequestContourMessage { Records = effective });
+            }, System.Windows.Threading.DispatcherPriority.Background);
+        }
+        private void ExecutePolarContour()
+        {
+            var manager = ModuleManager.DefaultManager;
+            var effective = _lastSelectedRecords.Where(r => !r.IsHidden && !r.IsDeleted).ToList();
+            if (effective.Count == 0) { MessageBox.Show("No records selected.", "Polar Contour"); return; }
+            manager.InjectOrNavigate(Regions.Documents, AppModules.PlotModule);
+            System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Messenger.Default.Send(new RequestPolarContourMessage { Records = effective });
+            }, System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private void ExecutePolarHeatmap()
+        {
+            var manager = ModuleManager.DefaultManager;
+            var effective = _lastSelectedRecords.Where(r => !r.IsHidden && !r.IsDeleted).ToList();
+            if (effective.Count == 0) { MessageBox.Show("No records selected.", "Polar Heatmap"); return; }
+            manager.InjectOrNavigate(Regions.Documents, AppModules.PlotModule);
+            System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Messenger.Default.Send(new RequestPolarHeatmapMessage { Records = effective });
+            }, System.Windows.Threading.DispatcherPriority.Background);
         }
         private async void ExecuteDataReload()
         {

@@ -262,6 +262,24 @@ namespace DXApplication2.Modules.ViewModels
                 if (_selectedRecords.Count == 0) return;
                 await RegenerateAsync();
             });
+            Messenger.Default.Register<RequestPolarHeatmapMessage>(this, async msg =>
+            {
+                if (msg.Records.Count > 0) _selectedRecords = msg.Records;
+                CurrentPlotType = "PolarHeatmap";
+                await GenerateHeatmapAsync();   // 完全复用 heatmap 的字段选择逻辑
+            });
+            Messenger.Default.Register<RequestContourMessage>(this, async msg =>
+            {
+                if (msg.Records.Count > 0) _selectedRecords = msg.Records;
+                CurrentPlotType = "Contour";
+                await GenerateHeatmapAsync();   // 完全复用
+            });
+            Messenger.Default.Register<RequestPolarContourMessage>(this, async msg =>
+            {
+                if (msg.Records.Count > 0) _selectedRecords = msg.Records;
+                CurrentPlotType = "PolarContour";
+                await GenerateHeatmapAsync();
+            });
         }
         private void ExecuteExportCsv()
         {
@@ -469,6 +487,9 @@ namespace DXApplication2.Modules.ViewModels
 
             PlotKind kind;
             if (CurrentPlotType == "Heatmap") kind = PlotKind.Heatmap;
+            else if (CurrentPlotType == "PolarHeatmap") kind = PlotKind.PolarHeatmap;
+            else if (CurrentPlotType == "Contour") kind = PlotKind.Contour;           // 新
+            else if (CurrentPlotType == "PolarContour") kind = PlotKind.PolarContour; // 新
             else if (CurrentPlotType == "Polar") kind = PlotKind.Polar;
             else if (CurrentPlotType == "PolarFilled") kind = PlotKind.PolarFilled;
             else kind = PlotKind.LineOrScatter;
@@ -527,7 +548,7 @@ namespace DXApplication2.Modules.ViewModels
 
                 CurrentData = data;
                 StatusMessage = $"Rendered {_selectedRecords.Count} records ({processor.SourceType})";
-                if (CurrentPlotType == "Heatmap" && data.ZMin.HasValue && data.ZMax.HasValue)
+                if ((CurrentPlotType == "Heatmap" || CurrentPlotType == "PolarHeatmap" || CurrentPlotType == "Contour" || CurrentPlotType == "PolarContour") && data.ZMin.HasValue && data.ZMax.HasValue)
                 {
                     ZRangeMin = data.ZMin.Value;
                     ZRangeMax = data.ZMax.Value;
@@ -574,8 +595,8 @@ namespace DXApplication2.Modules.ViewModels
         }
         // 已有的:private string _currentPlotType = "Line";
         // 修改设置逻辑,让 UI 能区分是否 Heatmap
-        public bool IsHeatmap => _currentPlotType == "Heatmap";
-        
+        public bool IsHeatmap => _currentPlotType == "Heatmap" || _currentPlotType == "PolarHeatmap" || CurrentPlotType == "Contour" || CurrentPlotType == "PolarContour";
+
         private FieldOption? _selectedZField;
         public FieldOption? SelectedZField
         {

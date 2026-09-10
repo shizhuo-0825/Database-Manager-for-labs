@@ -41,7 +41,18 @@ namespace DXApplication2.Common.Messages
         // 空:PlotModule 会从缓存里拿最新的 SelectedRecords
         public List<DataRecord> Records { get; set; } = new();
     }
-
+    public class RequestPolarHeatmapMessage
+    {
+        public List<DataRecord> Records { get; set; } = new();
+    }
+    public class RequestContourMessage
+    {
+        public List<DataRecord> Records { get; set; } = new();
+    }
+    public class RequestPolarContourMessage
+    {
+        public List<DataRecord> Records { get; set; } = new();
+    }
     /// <summary>Records 选中项变化(从 GroupModule 或 RecordsModule 广播)</summary>
     public class SelectedRecordsChangedMessage
     {

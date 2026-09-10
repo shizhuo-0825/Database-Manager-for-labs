@@ -10,9 +10,12 @@ namespace DXApplication2.Modules.Views
     public partial class PlotModuleView : UserControl
     {
         private readonly HeatmapRenderer _heatmapRenderer = new();
+        private readonly PolarHeatmapRenderer _polarHeatmapRenderer = new();
         private readonly LinePlotRenderer _lineRenderer = new();
         private readonly PolarPlotRenderer _polarRenderer = new(withFill: false);
         private readonly PolarPlotRenderer _polarFilledRenderer = new(withFill: true);
+        private readonly ContourRenderer _contourRenderer = new();
+        private readonly PolarContourRenderer _polarContourRenderer = new();
         private PlotModuleViewModel? _vm;
 
         public PlotModuleView()
@@ -47,8 +50,11 @@ namespace DXApplication2.Modules.Views
             {
                 "Scatter" => _scatterRenderer,
                 "Heatmap" => _heatmapRenderer,
+                "PolarHeatmap" => _polarHeatmapRenderer,
                 "Polar" => _polarRenderer,
                 "PolarFilled" => _polarFilledRenderer,
+                "Contour" => _contourRenderer,
+                "PolarContour" => _polarContourRenderer,
                 _ => _lineRenderer
             };
             System.Diagnostics.Debug.WriteLine($"Using renderer: {renderer.PlotType}");

@@ -104,11 +104,7 @@
 
                     </dxr:RibbonPageGroup>
                     <dxr:RibbonPageGroup Caption="Plot Style">
-                        <dxb:BarButtonItem 
-                            Content="Scatter Plot" 
-                            Command="{Binding ScatterPlotCommand}"
-                            LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_Point.svg'}"
-                            RibbonStyle="Large"/>
+                        
                         <dxb:BarButtonItem 
                             Content="Line Plot" 
                             Command="{Binding LinePlotCommand}"
@@ -120,15 +116,30 @@
                             LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_PolarLine.svg'}"
                             RibbonStyle="Large"/>
                         <dxb:BarButtonItem 
-                            Content="Filled Polar Plot" 
-                            Command="{Binding PolarPlotFilledCommand}"
-                            LargeGlyph="{dx:DXImage 'SvgImages/Chart/ChartType_PolarArea.svg'}"
-                            RibbonStyle="Large"/>
-                        <dxb:BarButtonItem 
-                            Content="Heat Map" 
+                            Content="Heatmap" 
                             Command="{Binding HeatmapCommand}"
                             LargeGlyph="{dx:DXImage 'SvgImages/Chart/Heatmap.svg'}"
                             RibbonStyle="Large"/>
+                        <dxb:BarButtonItem 
+                            Content="Scatter Plot" 
+                            Command="{Binding ScatterPlotCommand}"
+                            Glyph="{dx:DXImage 'SvgImages/Chart/ChartType_Point.svg'}"/>
+                        <dxb:BarButtonItem 
+                            Content="Filled Polar Plot" 
+                            Command="{Binding PolarPlotFilledCommand}"
+                            Glyph="{dx:DXImage 'SvgImages/Chart/ChartType_PolarArea.svg'}"/>
+                        <dxb:BarButtonItem 
+                            Content="Polar Heatmap" 
+                            Command="{Binding PolarHeatmapCommand}"
+                            Glyph="{dx:DXImage 'SvgImages/Chart/ChartType_Sunburst.svg'}"/>
+                        <dxb:BarButtonItem 
+                            Content="Contour" 
+                            Command="{Binding ContourCommand}"
+                            Glyph="{dx:DXImage 'SvgImages/Spreadsheet/CreateStackedAreaChart.svg'}"/>
+                        <dxb:BarButtonItem 
+                            Content="Polar Contour" 
+                            Command="{Binding PolarContourCommand}"
+                            Glyph="{dx:DXImage 'SvgImages/Spreadsheet/CreatePieChart.svg'}"/>
                         <dxb:BarButtonItem 
                             Content="Video" 
                             Command="{Binding GenerateVideoCommand}"

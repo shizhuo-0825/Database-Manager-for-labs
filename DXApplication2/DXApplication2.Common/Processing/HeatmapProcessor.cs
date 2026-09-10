@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace DXApplication2.Common.Processing
 {
     /// <summary>
@@ -19,8 +20,116 @@ namespace DXApplication2.Common.Processing
     /// - 输出:Matrix[y, x] + HeatmapXValues[x] + HeatmapYValues[y]
     /// - Y 方差=0 时抛异常(UI 层弹错误)
     /// </summary>
+    
+
+
     public class HeatmapProcessor : IDataProcessor
     {
+        private class HeatmapVertex : MIConvexHull.IVertex
+        {
+            public double[] Position { get; }
+            public double Z { get; }
+            public HeatmapVertex(double xNorm, double yNorm, double z)
+            {
+                Position = new[] { xNorm, yNorm };
+                Z = z;
+            }
+        }
+
+        private static void FillMissingCells(
+            double[,] matrix, List<double> uniqueX, List<double> uniqueY)
+        {
+            int ny = uniqueY.Count, nx = uniqueX.Count;
+
+            // 归一化到 [0,1],避免各轴单位差把三角形拉扁
+            double xMin = uniqueX.Min(), xMax = uniqueX.Max();
+            double yMin = uniqueY.Min(), yMax = uniqueY.Max();
+            double xRange = xMax - xMin, yRange = yMax - yMin;
+            if (xRange < 1e-15 || yRange < 1e-15) return;
+            double Nx(double x) => (x - xMin) / xRange;
+            double Ny(double y) => (y - yMin) / yRange;
+
+            // 收集已知点
+            var known = new List<HeatmapVertex>();
+            for (int i = 0; i < ny; i++)
+                for (int j = 0; j < nx; j++)
+                    if (!double.IsNaN(matrix[i, j]))
+                        known.Add(new HeatmapVertex(Nx(uniqueX[j]), Ny(uniqueY[i]), matrix[i, j]));
+
+            if (known.Count < 3) { NearestNeighborFillAll(matrix, uniqueX, uniqueY, known, Nx, Ny); return; }
+
+            // Delaunay,失败(共线/退化)时全用最近邻兜底
+            List<MIConvexHull.DefaultTriangulationCell<HeatmapVertex>> triangles;
+            try
+            {
+                var tri = MIConvexHull.Triangulation
+                    .CreateDelaunay<HeatmapVertex, MIConvexHull.DefaultTriangulationCell<HeatmapVertex>>(known);
+                triangles = tri.Cells.ToList();
+            }
+            catch
+            {
+                NearestNeighborFillAll(matrix, uniqueX, uniqueY, known, Nx, Ny);
+                return;
+            }
+
+            // 逐 NaN 单元填
+            for (int i = 0; i < ny; i++)
+                for (int j = 0; j < nx; j++)
+                {
+                    if (!double.IsNaN(matrix[i, j])) continue;
+                    double px = Nx(uniqueX[j]), py = Ny(uniqueY[i]);
+
+                    var interp = TryInterpolate(px, py, triangles);
+                    matrix[i, j] = interp ?? NearestZ(px, py, known);
+                }
+        }
+
+        private static double? TryInterpolate(
+            double px, double py,
+            List<MIConvexHull.DefaultTriangulationCell<HeatmapVertex>> triangles)
+        {
+            const double eps = 1e-9;
+            foreach (var t in triangles)
+            {
+                var a = t.Vertices[0]; var b = t.Vertices[1]; var c = t.Vertices[2];
+                double ax = a.Position[0], ay = a.Position[1];
+                double bx = b.Position[0], by = b.Position[1];
+                double cx = c.Position[0], cy = c.Position[1];
+                double denom = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+                if (Math.Abs(denom) < 1e-15) continue;
+                double u = ((by - cy) * (px - cx) + (cx - bx) * (py - cy)) / denom;
+                double v = ((cy - ay) * (px - cx) + (ax - cx) * (py - cy)) / denom;
+                double w = 1.0 - u - v;
+                if (u >= -eps && v >= -eps && w >= -eps)
+                    return u * a.Z + v * b.Z + w * c.Z;
+            }
+            return null;
+        }
+
+        private static double NearestZ(double px, double py, List<HeatmapVertex> pts)
+        {
+            double bestD2 = double.MaxValue, bestZ = 0;
+            foreach (var p in pts)
+            {
+                double dx = p.Position[0] - px, dy = p.Position[1] - py;
+                double d2 = dx * dx + dy * dy;
+                if (d2 < bestD2) { bestD2 = d2; bestZ = p.Z; }
+            }
+            return bestZ;
+        }
+
+        private static void NearestNeighborFillAll(
+            double[,] matrix, List<double> uniqueX, List<double> uniqueY,
+            List<HeatmapVertex> known, Func<double, double> Nx, Func<double, double> Ny)
+        {
+            if (known.Count == 0) return;
+            for (int i = 0; i < uniqueY.Count; i++)
+                for (int j = 0; j < uniqueX.Count; j++)
+                {
+                    if (!double.IsNaN(matrix[i, j])) continue;
+                    matrix[i, j] = NearestZ(Nx(uniqueX[j]), Ny(uniqueY[i]), known);
+                }
+        }
         public string SourceType => "Heatmap";
         private const double BinTolerance = 0.01;
         private static double Snap(double v) => Math.Round(v / BinTolerance) * BinTolerance;
@@ -119,7 +228,7 @@ namespace DXApplication2.Common.Processing
             {
                 throw new InvalidOperationException("No valid Z data found for heatmap.");
             }
-
+            FillMissingCells(matrix, uniqueX, uniqueY);
             return new ProcessedData
             {
                 SourceType = SourceType,

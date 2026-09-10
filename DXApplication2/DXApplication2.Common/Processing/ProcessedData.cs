@@ -15,7 +15,6 @@ namespace DXApplication2.Common.Processing
 
         /// <summary>单条曲线的 Y 轴数据(简单场景)</summary>
         public double[]? Y { get; set; }
-
         /// <summary>Y 轴误差棒(可选)</summary>
         public double[]? YError { get; set; }
 
